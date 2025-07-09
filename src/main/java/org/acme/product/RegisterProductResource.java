@@ -10,12 +10,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/products/api/v1")
-@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class RegisterProductResource {
 
     @POST
     public Uni<Response> registerProduct(@Valid RegisterProductCommand command) {
-        return Uni.createFrom().item(Response.created(null).build());
+        return Uni.createFrom().item(Response.created(null).entity(command).build());
     }
 }
