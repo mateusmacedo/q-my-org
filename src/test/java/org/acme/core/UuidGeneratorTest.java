@@ -10,12 +10,12 @@ import org.acme.core.edaes.UuidGenerator;
 @QuarkusTest
 public class UuidGeneratorTest {
     @Test
-    public void testGenerateId() {
+    void shouldGenerateNonEmptyIdWhenGeneratingId() {
         // Arrange
         UuidGenerator uuidGenerator = new UuidGenerator();
 
         // Act
-        String generatedId = uuidGenerator.generateId();
+        String generatedId = uuidGenerator.generate();
 
         // Assert
         assertNotNull(generatedId);
