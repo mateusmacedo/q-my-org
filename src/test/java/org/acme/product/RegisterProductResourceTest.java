@@ -1,8 +1,11 @@
 package org.acme.product;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import jakarta.ws.rs.core.MediaType;
 
 import static io.restassured.RestAssured.given;
@@ -11,26 +14,30 @@ import static org.hamcrest.CoreMatchers.is;
 @QuarkusTest
 public class RegisterProductResourceTest {
 
+    static {
+        RestAssured.defaultParser = Parser.JSON;
+    }
+
     @Test
-    public void testShouldNotRegisterProductWhenCommandIsInvalidAggregateId() {
+    public void testShouldNotRegisterProductWhenCommandIsInvalidId() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("invalid-uuid", "12345678", "Product Dummy"))
+            .body("{\"id\":\"invalid-uuid\",\"sku\":\"12345678\",\"name\":\"Product Dummy\"}")
             .when()
             .post("/products/api/v1")
             .then()
             .statusCode(400)
             .body("title", is("Constraint Violation"))
             .body("status", is(400))
-            .body("violations[0].field", is("registerProduct.command.aggregateId"))
-            .body("violations[0].message", is("{aggregateId.pattern}"));
+            .body("violations[0].field", is("registerProduct.command.id"))
+            .body("violations[0].message", is("{id.pattern}"));
     }
 
     @Test
     public void testShouldNotRegisterProductWhenCommandIsMissingSku() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("0e353046-31ef-4c1f-a54b-bd70a834948a", null, "Product Dummy"))
+            .body("{\"id\":\"0e353046-31ef-4c1f-a54b-bd70a834948a\",\"name\":\"Product Dummy\"}")
             .when()
             .post("/products/api/v1")
             .then()
@@ -45,7 +52,7 @@ public class RegisterProductResourceTest {
     public void testShouldNotRegisterProductWhenCommandIsInvalidPatternSku() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("0e353046-31ef-4c1f-a54b-bd70a834948a", "1234567", "Product Dummy"))
+            .body("{\"id\":\"0e353046-31ef-4c1f-a54b-bd70a834948a\",\"sku\":\"1234567\",\"name\":\"Product Dummy\"}")
             .when()
             .post("/products/api/v1")
             .then()
@@ -60,7 +67,7 @@ public class RegisterProductResourceTest {
     public void testShouldNotRegisterProductWhenCommandIsMissingName() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("0e353046-31ef-4c1f-a54b-bd70a834948a", "12345678", null))
+            .body("{\"id\":\"0e353046-31ef-4c1f-a54b-bd70a834948a\",\"sku\":\"12345678\"}")
             .when()
             .post("/products/api/v1")
             .then()
@@ -76,7 +83,7 @@ public class RegisterProductResourceTest {
     public void testShouldNotRegisterProductWhenCommandIsInvalidSizeName() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("0e353046-31ef-4c1f-a54b-bd70a834948a", "12345678", "P"))
+            .body("{\"id\":\"0e353046-31ef-4c1f-a54b-bd70a834948a\",\"sku\":\"12345678\",\"name\":\"P\"}")
             .when()
             .post("/products/api/v1")
             .then()
@@ -91,7 +98,7 @@ public class RegisterProductResourceTest {
     public void testShouldNotRegisterProductWhenCommandIsInvalidPatternName() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("0e353046-31ef-4c1f-a54b-bd70a834948a", "12345678", "Product@Dummy"))
+            .body("{\"id\":\"0e353046-31ef-4c1f-a54b-bd70a834948a\",\"sku\":\"12345678\",\"name\":\"Product@Dummy\"}")
             .when()
             .post("/products/api/v1")
             .then()
@@ -103,10 +110,21 @@ public class RegisterProductResourceTest {
     }
 
     @Test
-    public void testShouldRegisterProductWhenCommandIsValid() {
+    public void testShouldRegisterProductWhenCommandIsValidWithId() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(new RegisterProductCommand("0e353046-31ef-4c1f-a54b-bd70a834948a", "12345678", "Product Dummy"))
+            .body("{\"id\":\"0e353046-31ef-4c1f-a54b-bd70a834948a\",\"sku\":\"12345678\",\"name\":\"Product Dummy\"}")
+            .when()
+            .post("/products/api/v1")
+            .then()
+            .statusCode(201);
+    }
+
+    @Test
+    public void testShouldRegisterProductWhenCommandIsValidWithoutId() {
+        given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body("{\"sku\":\"12345678\",\"name\":\"Product Dummy\"}")
             .when()
             .post("/products/api/v1")
             .then()
