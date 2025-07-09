@@ -1,6 +1,8 @@
-package org.acme.core.edaes;
+package org.acme.core.cqrsedaes.cqrs;
 
 import java.util.List;
+
+import org.acme.core.Header;
 
 public abstract class BaseCommand<T> implements Command<T> {
 

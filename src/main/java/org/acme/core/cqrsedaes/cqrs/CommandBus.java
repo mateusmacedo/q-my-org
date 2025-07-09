@@ -1,4 +1,4 @@
-package org.acme.core.edaes;
+package org.acme.core.cqrsedaes.cqrs;
 
 import io.smallrye.mutiny.Uni;
 

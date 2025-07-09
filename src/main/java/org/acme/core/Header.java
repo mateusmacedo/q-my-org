@@ -1,4 +1,4 @@
-package org.acme.core.edaes;
+package org.acme.core;
 
 public record Header(
     String key,
