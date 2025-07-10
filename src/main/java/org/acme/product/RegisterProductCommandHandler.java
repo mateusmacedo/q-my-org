@@ -23,7 +23,7 @@ public class RegisterProductCommandHandler implements CommandHandler<RegisterPro
     @Override
     public Uni<Void> handle(RegisterProductCommand command) {
         String productId = idGenerator.generate();
-        Product product = new Product(productId);
+        Product product = productRepository.createAggregate(productId);
 
         product.registerProduct(command);
 
