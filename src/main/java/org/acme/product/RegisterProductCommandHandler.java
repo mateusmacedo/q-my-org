@@ -31,7 +31,7 @@ public class RegisterProductCommandHandler implements CommandHandler<RegisterPro
                 .onItem()
                 .call(() -> publishEvents(product))
                 .onItem()
-                .call(() -> markEventsAsCommitted(product))
+                .call(() -> product.markEventsAsCommitted())
                 .replaceWithVoid();
     }
 
@@ -39,9 +39,5 @@ public class RegisterProductCommandHandler implements CommandHandler<RegisterPro
         return product.getUncommittedEvents()
                 .onItem()
                 .transformToUni(events -> eventBus.publish(events));
-    }
-
-    private Uni<Void> markEventsAsCommitted(Product product) {
-        return product.markEventsAsCommitted();
     }
 }

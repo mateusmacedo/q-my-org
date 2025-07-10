@@ -33,8 +33,7 @@ public abstract class AggregateRepository<T extends AggregateRoot> {
                     if (events.isEmpty()) {
                         return Uni.createFrom().voidItem();
                     }
-                    return eventStore.saveEvents(aggregate.getId(), events, aggregate.getVersion())
-                            .onItem().call(() -> aggregate.markEventsAsCommitted());
+                    return eventStore.saveEvents(aggregate.getId(), events, aggregate.getVersion());
                 });
     }
 
