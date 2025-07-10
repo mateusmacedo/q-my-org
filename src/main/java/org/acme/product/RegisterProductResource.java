@@ -1,8 +1,10 @@
 package org.acme.product;
 
-import org.acme.core.edaes.Command;
+import org.acme.core.cqrsedaes.cqrs.Command;
+import org.acme.core.cqrsedaes.cqrs.CommandBus;
 import org.acme.core.filter.HeaderService;
 
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -21,11 +23,16 @@ public class RegisterProductResource {
     @Inject
     HeaderService headerService;
 
+    @Inject
+    CommandBus commandBus;
+
     @POST
+    @WithTransaction
     public Uni<Response> registerProduct(@Valid RegisterProductDto dto) {
         Command<RegisterProductDto> command = RegisterProductCommand.fromDto(dto)
         .withHeaders(headerService.generateDefaultHeaders());
 
-        return Uni.createFrom().item(Response.created(null).entity(command.getData()).build());
+        return commandBus.dispatch(command)
+            .onItem().transform(ignored -> Response.created(null).entity(command.getData()).build());
     }
 }

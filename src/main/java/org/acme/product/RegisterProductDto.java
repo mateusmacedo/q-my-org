@@ -3,8 +3,11 @@ package org.acme.product;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegisterProductDto {
     @NotNull(message = "{sku.obrigatorio}")
     @Pattern(regexp = "^[a-zA-Z0-9]{8}$", message = "{sku.pattern}")

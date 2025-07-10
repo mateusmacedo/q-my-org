@@ -1,13 +1,13 @@
 package org.acme.product;
 
-import org.acme.core.edaes.BaseCommand;
+import org.acme.core.cqrsedaes.cqrs.BaseCommand;
 
 public class RegisterProductCommand extends BaseCommand<RegisterProductDto> {
 
     private RegisterProductCommand() {
     }
 
-    public static BaseCommand<RegisterProductDto> fromDto(RegisterProductDto dto) {
-        return new RegisterProductCommand().withData(dto);
+    public static RegisterProductCommand fromDto(RegisterProductDto dto) {
+        return (RegisterProductCommand) new RegisterProductCommand().withData(dto);
     }
 }
