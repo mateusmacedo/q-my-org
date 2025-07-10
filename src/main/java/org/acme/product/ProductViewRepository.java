@@ -14,7 +14,7 @@ public class ProductViewRepository implements ProjectionRepository<ProductView>,
     }
 
     @Override
-    public Uni<Void> persist(ProductView projection) {
-        return projection.<ProductView>persist().replaceWithVoid();
+    public Uni<ProductView> save(ProductView projection) {
+        return projection.persist();
     }
 }
