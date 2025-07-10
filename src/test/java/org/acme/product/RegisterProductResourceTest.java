@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -18,22 +17,8 @@ import jakarta.ws.rs.core.MediaType;
 @Testcontainers
 public class RegisterProductResourceTest {
 
-    @Container
-    static PostgreSQLContainer<?> postgres;
-
     static {
         RestAssured.defaultParser = Parser.JSON;
-        postgres = new PostgreSQLContainer<>("postgres:14-alpine")
-                .withDatabaseName("hello")
-                .withUsername("user")
-                .withPassword("pwd");
-    }
-
-    @AfterAll
-    static void tearDown() {
-        if (postgres != null) {
-            postgres.close();
-        }
     }
 
     @Test
