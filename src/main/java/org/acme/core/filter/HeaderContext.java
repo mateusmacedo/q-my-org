@@ -1,6 +1,6 @@
 package org.acme.core.filter;
 
-import org.acme.core.edaes.IdGenerator;
+import org.acme.core.IdGenerator;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

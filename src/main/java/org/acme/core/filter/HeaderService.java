@@ -3,7 +3,7 @@ package org.acme.core.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.acme.core.edaes.Header;
+import org.acme.core.Header;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
