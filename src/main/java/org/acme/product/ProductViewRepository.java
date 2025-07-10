@@ -17,4 +17,8 @@ public class ProductViewRepository implements ProjectionRepository<ProductView>,
     public Uni<ProductView> save(ProductView projection) {
         return projection.persist();
     }
+
+    public Uni<ProductView> findBySku(String sku) {
+        return ProductView.find("sku", sku).firstResult();
+    }
 }
