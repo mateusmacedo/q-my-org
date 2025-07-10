@@ -1,16 +1,16 @@
 package org.acme.core.cqrsedaes.eda;
 
-import io.smallrye.mutiny.Uni;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.smallrye.mutiny.Uni;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class MutinyEventBus implements EventBus {
@@ -95,6 +95,6 @@ public class MutinyEventBus implements EventBus {
     }
 
     public Map<Class<? extends Event<?>>, EventHandler<?>> getHandlerRegistry() {
-        return Collections.unmodifiableMap(handlerRegistry);
+        return handlerRegistry;
     }
 }
