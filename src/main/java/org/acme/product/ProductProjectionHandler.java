@@ -20,7 +20,7 @@ public class ProductProjectionHandler implements EventHandler<ProductRegisteredE
         view.productId = event.getAggregateId();
         view.name = event.getData().getName();
         view.sku = event.getData().getSku();
-        return repository.persist(view)
+        return repository.save(view)
         .onItem().invoke(() -> {
             log.debug("Product projection saved: {}", view.productId);
         })

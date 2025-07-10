@@ -95,6 +95,6 @@ public class MutinyEventBus implements EventBus {
     }
 
     public Map<Class<? extends Event<?>>, EventHandler<?>> getHandlerRegistry() {
-        return handlerRegistry;
+        return Collections.unmodifiableMap(handlerRegistry);
     }
 }
