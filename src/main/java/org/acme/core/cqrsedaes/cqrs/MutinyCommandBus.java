@@ -27,7 +27,7 @@ public class MutinyCommandBus implements CommandBus {
         @SuppressWarnings("unchecked")
         private void registerHandler(CommandHandler<?, ?> handler) {
                 Class<?> handlerClass = handler.getClass();
-                
+
                 // Check implemented interfaces
                 Type[] genericInterfaces = handlerClass.getGenericInterfaces();
                 for (Type type : genericInterfaces) {
@@ -42,7 +42,7 @@ public class MutinyCommandBus implements CommandBus {
                                 }
                         }
                 }
-                
+
                 // Check superclass if not found in direct interfaces
                 Class<?> superclass = handlerClass.getSuperclass();
                 while (superclass != null && superclass != Object.class) {
@@ -53,7 +53,8 @@ public class MutinyCommandBus implements CommandBus {
                                         if (paramType.getRawType().equals(CommandHandler.class)) {
                                                 Type commandType = paramType.getActualTypeArguments()[0];
                                                 if (commandType instanceof Class) {
-                                                        handlerRegistry.put((Class<? extends Command<?>>) commandType, handler);
+                                                        handlerRegistry.put((Class<? extends Command<?>>) commandType,
+                                                                        handler);
                                                         return;
                                                 }
                                         }
@@ -64,7 +65,7 @@ public class MutinyCommandBus implements CommandBus {
         }
 
         @SuppressWarnings("unchecked")
-        public <R> Uni<R> dispatch(Command<R> command) {
+        public <R> Uni<Void> dispatch(Command<R> command) {
                 CommandHandler<Command<R>, R> handler = (CommandHandler<Command<R>, R>) handlerRegistry
                                 .get(command.getClass());
 
@@ -77,7 +78,6 @@ public class MutinyCommandBus implements CommandBus {
                 return handler.handle(command);
         }
 
-        // For testing purposes
         public Map<Class<? extends Command<?>>, CommandHandler<?, ?>> getHandlerRegistry() {
                 return handlerRegistry;
         }

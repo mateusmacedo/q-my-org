@@ -1,10 +1,8 @@
-package org.acme.core.edaes;
-
-import static org.mockito.Mockito.*;
+package org.acme.core.cqrsedaes.cqrs;
 
 import java.util.List;
-import java.util.stream.Stream;
 
+import org.acme.core.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,50 +38,41 @@ class MutinyCommandBusTest {
         String expectedResult = "test-result";
         testCommandHandler.setResult(expectedResult);
 
-        Stream<CommandHandler<?, ?>> handlerStream = Stream.of(testCommandHandler);
-        when(handlers.stream()).thenReturn(handlerStream);
+        // Manually register the handler to simulate @PostConstruct
+        commandBus.getHandlerRegistry().put(TestCommand.class, testCommandHandler);
 
         // Act
-        Uni<String> result = commandBus.dispatch(testCommand);
+        Uni<Void> result = commandBus.dispatch(testCommand);
 
         // Assert
-        UniAssertSubscriber<String> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
-        subscriber.awaitItem().assertItem(expectedResult);
-
-        verify(handlers, times(1)).stream();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.awaitItem().assertItem(null);
     }
 
     @Test
     void shouldFailWithIllegalStateExceptionWhenNoHandlerExists() {
-        // Arrange
-        Stream<CommandHandler<?, ?>> emptyHandlerStream = Stream.empty();
-        when(handlers.stream()).thenReturn(emptyHandlerStream);
+        // Arrange - no handler registered
 
         // Act
-        Uni<String> result = commandBus.dispatch(testCommand);
+        Uni<Void> result = commandBus.dispatch(testCommand);
 
         // Assert
-        UniAssertSubscriber<String> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
-        subscriber.awaitFailure().assertFailedWith(IllegalStateException.class, "No handler");
-
-        verify(handlers, times(1)).stream();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.awaitFailure().assertFailedWith(IllegalStateException.class, "No handler found for command");
     }
 
     @Test
     void shouldFailWithIllegalStateExceptionWhenNoMatchingHandlerExists() {
         // Arrange
         AnotherTestCommandHandler wrongHandler = new AnotherTestCommandHandler();
-        Stream<CommandHandler<?, ?>> handlerStream = Stream.of(wrongHandler);
-        when(handlers.stream()).thenReturn(handlerStream);
+        commandBus.getHandlerRegistry().put(AnotherTestCommand.class, wrongHandler);
 
         // Act
-        Uni<String> result = commandBus.dispatch(testCommand);
+        Uni<Void> result = commandBus.dispatch(testCommand);
 
         // Assert
-        UniAssertSubscriber<String> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
-        subscriber.awaitFailure().assertFailedWith(IllegalStateException.class, "No handler");
-
-        verify(handlers, times(1)).stream();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.awaitFailure().assertFailedWith(IllegalStateException.class, "No handler found for command");
     }
 
     @Test
@@ -93,17 +82,15 @@ class MutinyCommandBusTest {
         testCommandHandler.setResult(expectedResult);
 
         AnotherTestCommandHandler wrongHandler = new AnotherTestCommandHandler();
-        Stream<CommandHandler<?, ?>> handlerStream = Stream.of(wrongHandler, testCommandHandler);
-        when(handlers.stream()).thenReturn(handlerStream);
+        commandBus.getHandlerRegistry().put(AnotherTestCommand.class, wrongHandler);
+        commandBus.getHandlerRegistry().put(TestCommand.class, testCommandHandler);
 
         // Act
-        Uni<String> result = commandBus.dispatch(testCommand);
+        Uni<Void> result = commandBus.dispatch(testCommand);
 
         // Assert
-        UniAssertSubscriber<String> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
-        subscriber.awaitItem().assertItem(expectedResult);
-
-        verify(handlers, times(1)).stream();
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        subscriber.awaitItem().assertItem(null);
     }
 
     @Test
@@ -112,17 +99,14 @@ class MutinyCommandBusTest {
         RuntimeException expectedException = new RuntimeException("Handler failed");
         testCommandHandler.setException(expectedException);
 
-        Stream<CommandHandler<?, ?>> handlerStream = Stream.of(testCommandHandler);
-        when(handlers.stream()).thenReturn(handlerStream);
+        commandBus.getHandlerRegistry().put(TestCommand.class, testCommandHandler);
 
         // Act
-        Uni<String> result = commandBus.dispatch(testCommand);
+        Uni<Void> result = commandBus.dispatch(testCommand);
 
         // Assert
-        UniAssertSubscriber<String> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
+        UniAssertSubscriber<Void> subscriber = result.subscribe().withSubscriber(UniAssertSubscriber.create());
         subscriber.awaitFailure().assertFailedWith(RuntimeException.class, "Handler failed");
-
-        verify(handlers, times(1)).stream();
     }
 
     // Test command implementation
@@ -158,11 +142,11 @@ class MutinyCommandBusTest {
         }
 
         @Override
-        public Uni<String> handle(TestCommand command) {
+        public Uni<Void> handle(TestCommand command) {
             if (exception != null) {
                 return Uni.createFrom().failure(exception);
             }
-            return Uni.createFrom().item(result);
+            return Uni.createFrom().item(result).replaceWithVoid();
         }
     }
 
@@ -182,8 +166,8 @@ class MutinyCommandBusTest {
     // Another test command handler for testing handler selection
     private static class AnotherTestCommandHandler implements CommandHandler<AnotherTestCommand, String> {
         @Override
-        public Uni<String> handle(AnotherTestCommand command) {
-            return Uni.createFrom().item("another-result");
+        public Uni<Void> handle(AnotherTestCommand command) {
+            return Uni.createFrom().voidItem();
         }
     }
 }
