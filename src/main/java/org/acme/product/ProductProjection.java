@@ -7,10 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.acme.core.cqrsedaes.eda.EventHandler;
+import org.acme.product.bysku.ProductViewRepository;
+import org.acme.product.register.ProductRegisteredEvent;
 
 @ApplicationScoped
-public class ProductProjectionHandler implements EventHandler<ProductRegisteredEvent> {
-    private static final Logger log = LoggerFactory.getLogger(ProductProjectionHandler.class);
+public class ProductProjection implements EventHandler<ProductRegisteredEvent> {
+    private static final Logger log = LoggerFactory.getLogger(ProductProjection.class);
     @Inject
     ProductViewRepository repository;
 

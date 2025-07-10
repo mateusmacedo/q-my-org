@@ -1,9 +1,10 @@
-package org.acme.product;
+package org.acme.product.bysku;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 import io.smallrye.mutiny.Uni;
 import org.acme.core.cqrsedaes.projection.ProjectionRepository;
+import org.acme.product.ProductView;
 
 @ApplicationScoped
 public class ProductViewRepository implements ProjectionRepository<ProductView>, PanacheRepository<ProductView> {

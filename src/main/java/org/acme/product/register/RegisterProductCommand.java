@@ -1,4 +1,4 @@
-package org.acme.product;
+package org.acme.product.register;
 
 import org.acme.core.cqrsedaes.cqrs.BaseCommand;
 

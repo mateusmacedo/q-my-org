@@ -2,19 +2,21 @@ package org.acme.product;
 
 import org.acme.core.cqrsedaes.AggregateRoot;
 import org.acme.core.cqrsedaes.eda.Event;
+import org.acme.product.register.ProductRegisteredEvent;
+import org.acme.product.register.RegisterProductCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.smallrye.mutiny.Uni;
 
-public class Product extends AggregateRoot {
+public class ProductAggregate extends AggregateRoot {
 
-    private static final Logger log = LoggerFactory.getLogger(Product.class);
+    private static final Logger log = LoggerFactory.getLogger(ProductAggregate.class);
 
     private String name;
     private String sku;
 
-    public Product(String id) {
+    public ProductAggregate(String id) {
         super(id);
     }
 

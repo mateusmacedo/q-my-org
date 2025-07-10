@@ -1,21 +1,18 @@
-package org.acme.product;
+package org.acme.product.register;
 
 import org.acme.core.cqrsedaes.cqrs.Command;
 import org.acme.core.cqrsedaes.cqrs.CommandBus;
-import org.acme.core.cqrsedaes.cqrs.Query;
 import org.acme.core.cqrsedaes.cqrs.QueryBus;
 import org.acme.core.filter.HeaderService;
+import org.acme.product.bysku.ProductViewRepository;
 
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -39,21 +36,11 @@ public class RegisterProductResource {
 
     @POST
     @WithTransaction
-    public Uni<Response> registerProduct(@Valid RegisterProductDto dto) {
+    public Uni<Response> execute(@Valid RegisterProductDto dto) {
         Command<RegisterProductDto> command = RegisterProductCommand.fromDto(dto)
-        .withHeaders(headerService.generateDefaultHeaders());
+                .withHeaders(headerService.generateDefaultHeaders());
 
         return commandBus.dispatch(command)
-            .onItem().transform(ignored -> Response.created(null).entity(command.getData()).build());
-    }
-
-    @GET
-    @Path("/{sku}")
-    public Uni<Response> getProductBySku(@PathParam("sku") String sku) {
-        ProductBySkuDto dto = new ProductBySkuDto(sku);
-        Query<ProductBySkuDto> query = ProductViewBySkuQuery.fromDto(dto);
-        return queryBus.execute(query)
-            .onItem().ifNull().failWith(new NotFoundException())
-            .onItem().transform(product -> Response.ok(product).build());
+                .onItem().transform(ignored -> Response.created(null).entity(command.getData()).build());
     }
 }

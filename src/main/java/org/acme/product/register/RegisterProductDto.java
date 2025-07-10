@@ -1,4 +1,4 @@
-package org.acme.product;
+package org.acme.product.register;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

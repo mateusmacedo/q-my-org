@@ -4,6 +4,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Multi;
 
 import org.acme.core.UuidGenerator;
+import org.acme.product.register.ProductRegisteredEvent;
+import org.acme.product.register.RegisterProductCommand;
+import org.acme.product.register.RegisterProductDto;
 import org.junit.jupiter.api.Test;
 import jakarta.inject.Inject;
 
@@ -20,7 +23,7 @@ class ProductTest {
     void shouldRegisterProduct() {
         // Given
         String productId = idGenerator.generate();
-        Product product = new Product(productId);
+        ProductAggregate product = new ProductAggregate(productId);
         RegisterProductDto dto = new RegisterProductDto("TEST001", "Test Product");
 
         // When
@@ -37,7 +40,7 @@ class ProductTest {
     void shouldLoadFromHistory() {
         // Given
         String productId = idGenerator.generate();
-        Product product = new Product(productId);
+        ProductAggregate product = new ProductAggregate(productId);
 
         ProductRegisteredEvent.Data eventData = new ProductRegisteredEvent.Data("Historical Product", "HIST001");
         ProductRegisteredEvent event = new ProductRegisteredEvent(productId, eventData, List.of(), 1L);

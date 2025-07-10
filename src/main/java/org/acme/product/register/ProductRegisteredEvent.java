@@ -1,4 +1,4 @@
-package org.acme.product;
+package org.acme.product.register;
 
 import java.time.Instant;
 import java.util.List;

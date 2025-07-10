@@ -1,8 +1,9 @@
-package org.acme.product;
+package org.acme.product.register;
 
 import org.acme.core.IdGenerator;
 import org.acme.core.cqrsedaes.cqrs.CommandHandler;
 import org.acme.core.cqrsedaes.eda.EventBus;
+import org.acme.product.ProductAggregate;
 
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,7 +24,7 @@ public class RegisterProductCommandHandler implements CommandHandler<RegisterPro
     @Override
     public Uni<Void> handle(RegisterProductCommand command) {
         String productId = idGenerator.generate();
-        Product product = productRepository.createAggregate(productId);
+        ProductAggregate product = productRepository.createAggregate(productId);
 
         product.registerProduct(command);
 
@@ -35,7 +36,7 @@ public class RegisterProductCommandHandler implements CommandHandler<RegisterPro
                 .replaceWithVoid();
     }
 
-    private Uni<Void> publishEvents(Product product) {
+    private Uni<Void> publishEvents(ProductAggregate product) {
         return product.getUncommittedEvents()
                 .onItem()
                 .transformToUni(events -> eventBus.publish(events));

@@ -1,6 +1,7 @@
-package org.acme.product;
+package org.acme.product.bysku;
 
 import org.acme.core.cqrsedaes.cqrs.QueryHandler;
+import org.acme.product.ProductView;
 
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
