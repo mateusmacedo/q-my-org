@@ -10,6 +10,11 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.NotFoundException;
+
+import org.acme.product.ProductViewRepository;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -26,6 +31,9 @@ public class RegisterProductResource {
     @Inject
     CommandBus commandBus;
 
+    @Inject
+    ProductViewRepository productViewRepository;
+
     @POST
     @WithTransaction
     public Uni<Response> registerProduct(@Valid RegisterProductDto dto) {
@@ -34,5 +42,13 @@ public class RegisterProductResource {
 
         return commandBus.dispatch(command)
             .onItem().transform(ignored -> Response.created(null).entity(command.getData()).build());
+    }
+
+    @GET
+    @Path("/{id}")
+    public Uni<Response> getProduct(@PathParam("id") String id) {
+        return productViewRepository.findById(id)
+                .onItem().ifNull().failWith(new NotFoundException())
+                .onItem().transform(product -> Response.ok(product).build());
     }
 }
