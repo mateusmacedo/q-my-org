@@ -18,39 +18,39 @@ import jakarta.ws.rs.ext.Provider;
 @Priority(Priorities.HEADER_DECORATOR)
 public class HeaderFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(HeaderFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(HeaderFilter.class);
 
     @Inject
     HeaderContext headerContext;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        logger.debug("Iniciando o HeaderFilter...");
+        log.debug("Iniciando o HeaderFilter...");
 
         String correlationId = extractHeader(requestContext, HeaderConstants.CORRELATION_ID);
         if (correlationId == null || correlationId.trim().isEmpty()) {
             String generatedCorrelationId = headerContext.getCorrelationId();
             headerContext.setCorrelationId(generatedCorrelationId);
             requestContext.getHeaders().putSingle(HeaderConstants.CORRELATION_ID, generatedCorrelationId);
-            logger.debug("Gerado e Adicionando CorrelationId: {} ao HeaderContext", generatedCorrelationId);
+            log.debug("Gerado e Adicionando CorrelationId: {} ao HeaderContext", generatedCorrelationId);
         } else {
             headerContext.setCorrelationId(correlationId);
             requestContext.getHeaders().putSingle(HeaderConstants.CORRELATION_ID, correlationId);
-            logger.debug("Adicionando CorrelationId: {} ao HeaderContext", correlationId);
+            log.debug("Adicionando CorrelationId: {} ao HeaderContext", correlationId);
         }
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException {
-        logger.debug("Iniciando o HeaderFilter para resposta...");
+        log.debug("Iniciando o HeaderFilter para resposta...");
 
         if (headerContext.getCorrelationId() != null) {
             responseContext.getHeaders().putSingle(HeaderConstants.CORRELATION_ID, headerContext.getCorrelationId());
-            logger.debug("Adicionando CorrelationId na resposta: {}", headerContext.getCorrelationId());
+            log.debug("Adicionando CorrelationId na resposta: {}", headerContext.getCorrelationId());
         }
 
-        logger.debug("HeaderFilter para resposta finalizado.");
+        log.debug("HeaderFilter para resposta finalizado.");
     }
 
     private String extractHeader(ContainerRequestContext requestContext, String headerName) {
